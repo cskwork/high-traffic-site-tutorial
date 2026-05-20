@@ -15,16 +15,20 @@ export interface Motif {
 export interface ConceptMeta {
   readonly slug: string;
   readonly title: string;
+  readonly title_ko?: string;
   readonly family: Family;
   readonly level: Level;
   readonly summary: string;
+  readonly summary_ko?: string;
   readonly tags: ReadonlyArray<string>;
+  readonly tags_ko?: ReadonlyArray<string>;
   readonly motif: Motif;
 }
 
 export interface CurriculumNode {
   readonly id: string;
   readonly label: string;
+  readonly label_ko?: string;
   readonly family: Family;
   readonly level: Level;
   readonly slugs: ReadonlyArray<string>;

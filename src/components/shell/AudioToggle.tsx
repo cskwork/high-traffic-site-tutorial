@@ -1,31 +1,35 @@
 import { useAudio } from "@/audio/useAudio";
 import { Button } from "@/components/ui/Button";
 import { Slider } from "@/components/ui/Slider";
+import { T, useT } from "@/i18n/T";
 
 export function AudioToggle() {
+  const t = useT();
   const { audio, enable, disable, setVolume } = useAudio();
   const on = audio.enabled;
 
   return (
-    <div className="flex items-center gap-3" role="group" aria-label="Audio controls">
+    <div className="flex items-center gap-3" role="group" aria-label={t({ en: "Audio controls", ko: "오디오 컨트롤" })}>
       <Button
         variant={on ? "primary" : "outline"}
         size="sm"
         onClick={() => (on ? disable() : void enable())}
         aria-pressed={on}
-        aria-label={on ? "Mute soundtrack" : "Turn on soundtrack"}
-        title={on ? "Mute soundtrack" : "Turn on soundtrack"}
+        aria-label={on ? t({ en: "Mute soundtrack", ko: "사운드트랙 음소거" }) : t({ en: "Turn on soundtrack", ko: "사운드트랙 켜기" })}
+        title={on ? t({ en: "Mute soundtrack", ko: "사운드트랙 음소거" }) : t({ en: "Turn on soundtrack", ko: "사운드트랙 켜기" })}
       >
         <SoundIcon on={on} />
-        <span className="hidden sm:inline">{on ? "Sound on" : "Turn on sound"}</span>
+        <span className="hidden sm:inline">
+          {on ? <T en="Sound on" ko="사운드 켜짐" /> : <T en="Turn on sound" ko="사운드 켜기" />}
+        </span>
       </Button>
       {on ? (
         <Slider
-          label="vol"
+          label={t({ en: "vol", ko: "음량" })}
           value={audio.volume}
           onValueChange={setVolume}
           className="w-28 hidden md:flex"
-          aria-label="Volume"
+          aria-label={t({ en: "Volume", ko: "음량" })}
         />
       ) : null}
     </div>

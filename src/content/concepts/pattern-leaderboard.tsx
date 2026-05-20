@@ -8,6 +8,7 @@ import {
 } from "@/components/concept/SandboxControls";
 import { conceptBySlug } from "@/content/registry";
 import { useAudio } from "@/audio/useAudio";
+import { useT } from "@/i18n/T";
 
 interface Row {
   id: string;
@@ -23,6 +24,7 @@ const initial: ReadonlyArray<Row> = [
 ];
 
 export default function PatternLeaderboard() {
+  const t = useT();
   const concept = conceptBySlug["pattern-leaderboard"]!;
   const { play, ping } = useAudio();
   const [rows, setRows] = useState<Row[]>([...initial]);
@@ -42,21 +44,40 @@ export default function PatternLeaderboard() {
       story={
         <>
           <p>
-            A Redis sorted set keeps members ranked by a numeric score in O(log N). Increment with
-            ZINCRBY, read the top N with ZREVRANGE, find a player's rank with ZREVRANK. Pair with
-            Kafka if you want every score change to fan out to other consumers.
+            {t({
+              en: "A Redis sorted set keeps members ranked by a numeric score in O(log N). Increment with ZINCRBY, read the top N with ZREVRANGE, find a player's rank with ZREVRANK. Pair with Kafka if you want every score change to fan out to other consumers.",
+              ko: "레디스 정렬된 셋은 숫자 점수로 멤버를 O(log N)에 순위 정렬합니다. ZINCRBY로 증가시키고, ZREVRANGE로 상위 N명을 조회하며, ZREVRANK로 특정 플레이어의 순위를 찾습니다. 점수 변경을 다른 컨슈머에 팬아웃하려면 카프카와 조합하세요.",
+            })}
           </p>
           <Bullets
             items={[
-              { heading: "Time-bucketed boards", body: "Use one ZSET per day (lb:2026-05-20). TTL old ones; aggregate into a 'season' ZSET periodically." },
-              { heading: "Tiebreaks", body: "Pack a secondary signal into the score's fractional bits — e.g. score * 1e6 - earlier_timestamp." },
-              { heading: "Pagination", body: "ZREVRANGE BYSCORE / BYLEX with LIMIT for cheap paginated rows; ZRANGESTORE for materialized snapshots." },
+              {
+                heading: t({ en: "Time-bucketed boards", ko: "시간 버킷 리더보드" }),
+                body: t({
+                  en: "Use one ZSET per day (lb:2026-05-20). TTL old ones; aggregate into a 'season' ZSET periodically.",
+                  ko: "하루에 ZSET 하나(lb:2026-05-20). 오래된 것은 TTL로 삭제하고, 주기적으로 '시즌' ZSET에 집계하세요.",
+                }),
+              },
+              {
+                heading: t({ en: "Tiebreaks", ko: "동점 처리" }),
+                body: t({
+                  en: "Pack a secondary signal into the score's fractional bits — e.g. score * 1e6 - earlier_timestamp.",
+                  ko: "점수의 소수 부분에 보조 신호를 넣으세요. 예: score * 1e6 - earlier_timestamp.",
+                }),
+              },
+              {
+                heading: t({ en: "Pagination", ko: "페이지네이션" }),
+                body: t({
+                  en: "ZREVRANGE BYSCORE / BYLEX with LIMIT for cheap paginated rows; ZRANGESTORE for materialized snapshots.",
+                  ko: "LIMIT과 함께 ZREVRANGE BYSCORE / BYLEX로 저렴하게 페이지네이션하고, 머터리얼라이즈드 스냅샷에는 ZRANGESTORE를 사용하세요.",
+                }),
+              },
             ]}
           />
         </>
       }
       viz={
-        <Stage label="zset(leaderboard) — live ranked rows" height={320}>
+        <Stage label={t({ en: "zset(leaderboard) — live ranked rows", ko: "zset(리더보드) — 실시간 순위" })} height={320}>
           <div className="absolute inset-0 flex flex-col gap-2 p-5">
             {rows.map((r, i) => (
               <div
@@ -85,14 +106,14 @@ export default function PatternLeaderboard() {
             />
           ))}
           <ActionButton
-            label="reset"
+            label={t({ en: "reset", ko: "초기화" })}
             onAction={() => {
               setRows([...initial]);
               void ping("bell", "C5");
             }}
           />
-          <ActionButton label="play motif" primary onAction={() => void play(concept.motif)} />
-          <CounterDisplay label="rows" value={rows.length} />
+          <ActionButton label={t({ en: "play motif", ko: "모티프 재생" })} primary onAction={() => void play(concept.motif)} />
+          <CounterDisplay label={t({ en: "rows", ko: "행 수" })} value={rows.length} />
         </SandboxControls>
       }
       code={

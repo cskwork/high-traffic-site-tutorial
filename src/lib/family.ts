@@ -1,9 +1,10 @@
+import type { Bilingual } from "@/i18n/T";
 import type { Family } from "@/lib/types";
 
-export const familyLabel: Record<Family, string> = {
-  kafka: "Kafka",
-  redis: "Redis",
-  pattern: "Patterns",
+export const familyLabel: Record<Family, Bilingual> = {
+  kafka: { en: "Kafka", ko: "카프카" },
+  redis: { en: "Redis", ko: "레디스" },
+  pattern: { en: "Patterns", ko: "패턴" },
 };
 
 export const familyClass: Record<Family, string> = {

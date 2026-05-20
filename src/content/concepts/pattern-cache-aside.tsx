@@ -9,8 +9,10 @@ import {
 } from "@/components/concept/SandboxControls";
 import { conceptBySlug } from "@/content/registry";
 import { useAudio } from "@/audio/useAudio";
+import { useT } from "@/i18n/T";
 
 export default function PatternCacheAside() {
+  const t = useT();
   const concept = conceptBySlug["pattern-cache-aside"]!;
   const { play, ping } = useAudio();
   const [scenario, setScenario] = useState<"hit" | "miss" | "write">("hit");
@@ -30,21 +32,40 @@ export default function PatternCacheAside() {
       story={
         <>
           <p>
-            Read-heavy workloads love cache-aside: try Redis first. On miss, load from the DB and
-            write back. On write, update DB and invalidate the cached value. The cache stays a
-            faithful read-through, not a write target.
+            {t({
+              en: "Read-heavy workloads love cache-aside: try Redis first. On miss, load from the DB and write back. On write, update DB and invalidate the cached value. The cache stays a faithful read-through, not a write target.",
+              ko: "읽기가 많은 워크로드는 캐시 어사이드를 선호합니다. 레디스를 먼저 확인하고, 미스 시 DB에서 불러와 캐시에 저장합니다. 쓰기 시에는 DB를 갱신하고 캐시를 무효화합니다. 캐시는 충실한 읽기 캐시로 유지되며, 쓰기 대상이 되지 않습니다.",
+            })}
           </p>
           <Bullets
             items={[
-              { heading: "Stampede", body: "Many misses for the same hot key hit the DB at once. Protect with single-flight (SETNX + TTL) or request coalescing." },
-              { heading: "Negative caching", body: "Cache 'not found' too — short TTL — so 404s do not pummel the DB." },
-              { heading: "Staleness", body: "Set a TTL even with explicit invalidation; it bounds drift if an invalidate is missed." },
+              {
+                heading: t({ en: "Stampede", ko: "스탬피드" }),
+                body: t({
+                  en: "Many misses for the same hot key hit the DB at once. Protect with single-flight (SETNX + TTL) or request coalescing.",
+                  ko: "같은 핫 키에 대한 다수의 미스가 DB를 동시에 강타합니다. 싱글 플라이트(SETNX + TTL) 또는 요청 합치기로 방어하세요.",
+                }),
+              },
+              {
+                heading: t({ en: "Negative caching", ko: "네거티브 캐싱" }),
+                body: t({
+                  en: "Cache 'not found' too — short TTL — so 404s do not pummel the DB.",
+                  ko: "'찾을 수 없음'도 짧은 TTL로 캐싱하세요. 그래야 404 응답이 DB를 두드리지 않습니다.",
+                }),
+              },
+              {
+                heading: t({ en: "Staleness", ko: "오래된 데이터" }),
+                body: t({
+                  en: "Set a TTL even with explicit invalidation; it bounds drift if an invalidate is missed.",
+                  ko: "명시적 무효화를 사용하더라도 TTL을 설정하세요. 무효화가 누락될 때 데이터 편차를 제한합니다.",
+                }),
+              },
             ]}
           />
         </>
       }
       viz={
-        <Stage label="Cache → DB · read miss · write invalidate" height={320}>
+        <Stage label={t({ en: "Cache → DB · read miss · write invalidate", ko: "캐시 → DB · 읽기 미스 · 쓰기 무효화" })} height={320}>
           <MessageFlow
             running
             beats={beats}
@@ -91,9 +112,9 @@ export default function PatternCacheAside() {
               }}
             />
           ))}
-          <ActionButton label="play motif" primary onAction={() => void play(concept.motif)} />
-          <CounterDisplay label="hits" value={hits} />
-          <CounterDisplay label="misses" value={misses} />
+          <ActionButton label={t({ en: "play motif", ko: "모티프 재생" })} primary onAction={() => void play(concept.motif)} />
+          <CounterDisplay label={t({ en: "hits", ko: "히트" })} value={hits} />
+          <CounterDisplay label={t({ en: "misses", ko: "미스" })} value={misses} />
         </SandboxControls>
       }
       code={

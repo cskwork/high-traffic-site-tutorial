@@ -12,10 +12,12 @@ import {
 import { conceptBySlug } from "@/content/registry";
 import { useAudio } from "@/audio/useAudio";
 import { useTick } from "@/viz/useTick";
+import { T, useT } from "@/i18n/T";
 
 export default function KafkaPartitions() {
   const concept = conceptBySlug["kafka-partitions"]!;
   const { play, ping } = useAudio();
+  const t = useT();
   const [count, setCount] = useState(8);
   const [running, setRunning] = useState(true);
   const tick = useTick({
@@ -35,29 +37,33 @@ export default function KafkaPartitions() {
       story={
         <>
           <p>
-            A topic splits into <span className="font-mono text-pattern-300">N</span> partitions —
-            independent logs that can live on different brokers and be consumed in parallel.
+            <T en="A topic splits into" ko="토픽은" />{" "}
+            <span className="font-mono text-pattern-300">N</span>{" "}
+            <T
+              en="partitions — independent logs that can live on different brokers and be consumed in parallel."
+              ko="개의 파티션으로 분할됩니다. 각 파티션은 서로 다른 브로커에 위치할 수 있고 병렬로 소비 가능한 독립 로그입니다."
+            />
           </p>
           <Bullets
             items={[
               {
-                heading: "Routing",
-                body: "If the producer sends a key, Kafka hashes it: same key → same partition → totally ordered for that key.",
+                heading: t({ en: "Routing", ko: "라우팅" }),
+                body: t({ en: "If the producer sends a key, Kafka hashes it: same key → same partition → totally ordered for that key.", ko: "프로듀서가 키를 보내면 카프카가 이를 해시합니다. 같은 키 → 같은 파티션 → 해당 키에 대한 완전한 순서 보장." }),
               },
               {
-                heading: "Throughput knob",
-                body: "More partitions = more parallelism, more file handles, more rebalance time. Pick the smallest that hits your write throughput.",
+                heading: t({ en: "Throughput knob", ko: "처리량 조절" }),
+                body: t({ en: "More partitions = more parallelism, more file handles, more rebalance time. Pick the smallest that hits your write throughput.", ko: "파티션이 많을수록 병렬성이 높아지지만 파일 핸들과 리밸런스 시간도 늘어납니다. 쓰기 처리량을 감당하는 최솟값을 고르세요." }),
               },
               {
-                heading: "Ordering trade-off",
-                body: "Global ordering across a topic is not free. Pick a partition key whose ordering you actually care about (e.g. user-id).",
+                heading: t({ en: "Ordering trade-off", ko: "순서 보장의 트레이드오프" }),
+                body: t({ en: "Global ordering across a topic is not free. Pick a partition key whose ordering you actually care about (e.g. user-id).", ko: "토픽 전체의 전역 순서는 보장되지 않습니다. 실제로 순서가 필요한 기준(예: user-id)을 파티션 키로 선택하세요." }),
               },
             ]}
           />
         </>
       }
       viz={
-        <Stage label="Partitions ring — same key always lands here" height={420}>
+        <Stage label={t({ en: "Partitions ring — same key always lands here", ko: "파티션 링 — 같은 키는 항상 같은 곳으로" })} height={420}>
           <PartitionRing3D
             partitions={count}
             activePartition={active}
@@ -68,9 +74,9 @@ export default function KafkaPartitions() {
       }
       sandbox={
         <SandboxControls>
-          <Toggle label="ring" value={running} onToggle={() => setRunning((v) => !v)} />
+          <Toggle label={t({ en: "ring", ko: "링" })} value={running} onToggle={() => setRunning((v) => !v)} />
           <SandboxSlider
-            label="partitions"
+            label={t({ en: "partitions", ko: "파티션" })}
             min={3}
             max={16}
             step={1}
@@ -78,8 +84,8 @@ export default function KafkaPartitions() {
             onValueChange={(v) => setCount(Math.round(v))}
             className="w-48"
           />
-          <ActionButton label="play motif" primary onAction={() => void play(concept.motif)} />
-          <CounterDisplay label="active partition" value={active} hint={`of ${count}`} />
+          <ActionButton label={t({ en: "play motif", ko: "모티프 재생" })} primary onAction={() => void play(concept.motif)} />
+          <CounterDisplay label={t({ en: "active partition", ko: "활성 파티션" })} value={active} hint={t({ en: `of ${count}`, ko: `/ ${count}` })} />
         </SandboxControls>
       }
       code={

@@ -9,10 +9,12 @@ import {
 } from "@/components/concept/SandboxControls";
 import { conceptBySlug } from "@/content/registry";
 import { useAudio } from "@/audio/useAudio";
+import { T, useT } from "@/i18n/T";
 
 export default function RedisRateLimit() {
   const concept = conceptBySlug["redis-rate-limit"]!;
   const { play, ping } = useAudio();
+  const t = useT();
   const [capacity, setCapacity] = useState(10);
   const [refill, setRefill] = useState(2); // tokens per second
   const [tokens, setTokens] = useState(10);
@@ -47,21 +49,19 @@ export default function RedisRateLimit() {
       story={
         <>
           <p>
-            A token bucket is the classic recipe. Capacity = burst. Refill rate = sustained. INCR
-            with EXPIRE, or store tokens + last-refill timestamp in a key and atomically update with
-            Lua. Sliding-window uses a sorted set of timestamps; old ones are ZREM'd at the edge.
+            <T en="A token bucket is the classic recipe. Capacity = burst. Refill rate = sustained. INCR with EXPIRE, or store tokens + last-refill timestamp in a key and atomically update with Lua. Sliding-window uses a sorted set of timestamps; old ones are ZREM'd at the edge." ko="토큰 버킷이 가장 일반적인 구현 방식입니다. Capacity(용량)는 최대 버스트, refill rate(보충 속도)는 지속 처리량을 의미합니다. INCR과 EXPIRE를 조합하거나, 토큰 수와 마지막 보충 타임스탬프를 키에 저장하고 Lua로 원자적으로 업데이트합니다. 슬라이딩 윈도우는 타임스탬프 정렬된 셋(ZSET)을 사용하며, 윈도우 경계를 넘은 오래된 항목을 ZREM합니다." />
           </p>
           <Bullets
             items={[
-              { heading: "Token bucket", body: "Smooths bursts. Simple to reason about. Pick capacity for the max burst you'll accept." },
-              { heading: "Fixed window", body: "INCR key, EXPIRE to window size. Cheap but burst-prone at boundaries." },
-              { heading: "Sliding window", body: "ZADD timestamps, ZREMRANGEBYSCORE older than now-window, ZCARD to count. More accurate." },
+              { heading: t({ en: "Token bucket", ko: "토큰 버킷" }), body: t({ en: "Smooths bursts. Simple to reason about. Pick capacity for the max burst you'll accept.", ko: "버스트를 완화합니다. 이해하기 쉬운 방식입니다. 허용할 최대 버스트에 맞게 capacity를 설정하세요." }) },
+              { heading: t({ en: "Fixed window", ko: "고정 윈도우" }), body: t({ en: "INCR key, EXPIRE to window size. Cheap but burst-prone at boundaries.", ko: "INCR 키에 EXPIRE를 윈도우 크기로 설정합니다. 구현이 간단하지만 윈도우 경계에서 버스트가 발생할 수 있습니다." }) },
+              { heading: t({ en: "Sliding window", ko: "슬라이딩 윈도우" }), body: t({ en: "ZADD timestamps, ZREMRANGEBYSCORE older than now-window, ZCARD to count. More accurate.", ko: "ZADD로 타임스탬프를 추가하고, ZREMRANGEBYSCORE로 윈도우 바깥의 항목을 제거한 뒤 ZCARD로 셉니다. 더 정확합니다." }) },
             ]}
           />
         </>
       }
       viz={
-        <Stage label="Token bucket — drop a request, watch tokens drain" height={300}>
+        <Stage label={t({ en: "Token bucket — drop a request, watch tokens drain", ko: "토큰 버킷 — 요청을 보내 토큰이 줄어드는 걸 확인하세요" })} height={300}>
           <svg viewBox="0 0 720 240" className="h-full w-full">
             <g transform="translate(60,40)">
               {Array.from({ length: capacity }).map((_, i) => {
@@ -90,7 +90,7 @@ export default function RedisRateLimit() {
       sandbox={
         <SandboxControls>
           <SandboxSlider
-            label="capacity"
+            label={t({ en: "capacity", ko: "용량" })}
             min={5}
             max={30}
             step={1}
@@ -99,7 +99,7 @@ export default function RedisRateLimit() {
             className="w-44"
           />
           <SandboxSlider
-            label="refill/s"
+            label={t({ en: "refill/s", ko: "보충/초" })}
             min={0}
             max={10}
             step={1}
@@ -107,10 +107,10 @@ export default function RedisRateLimit() {
             onValueChange={(v) => setRefill(Math.round(v))}
             className="w-40"
           />
-          <ActionButton label="request" primary onAction={drop} />
-          <ActionButton label="play motif" primary onAction={() => void play(concept.motif)} />
-          <CounterDisplay label="allowed" value={allowed} />
-          <CounterDisplay label="denied" value={denied} />
+          <ActionButton label={t({ en: "request", ko: "요청" })} primary onAction={drop} />
+          <ActionButton label={t({ en: "play motif", ko: "모티프 재생" })} primary onAction={() => void play(concept.motif)} />
+          <CounterDisplay label={t({ en: "allowed", ko: "허용됨" })} value={allowed} />
+          <CounterDisplay label={t({ en: "denied", ko: "거부됨" })} value={denied} />
         </SandboxControls>
       }
       code={

@@ -8,6 +8,7 @@ import {
 } from "@/components/concept/SandboxControls";
 import { conceptBySlug } from "@/content/registry";
 import { useAudio } from "@/audio/useAudio";
+import { T, useT } from "@/i18n/T";
 
 type Kind = "string" | "hash" | "list" | "set" | "zset";
 
@@ -22,6 +23,7 @@ const palette: Record<Kind, { note: string; color: string }> = {
 export default function RedisDataTypes() {
   const concept = conceptBySlug["redis-data-types"]!;
   const { play, ping } = useAudio();
+  const t = useT();
   const [active, setActive] = useState<Kind>("string");
 
   const previews: Record<Kind, string> = {
@@ -38,20 +40,19 @@ export default function RedisDataTypes() {
       story={
         <>
           <p>
-            Redis is a typed in-memory data structure server. Each command targets one of these
-            primitives — pick by the access pattern you actually need.
+            <T en="Redis is a typed in-memory data structure server. Each command targets one of these primitives — pick by the access pattern you actually need." ko="레디스는 타입이 있는 인메모리 데이터 구조 서버입니다. 각 명령은 이 중 하나의 기본 타입을 대상으로 합니다. 실제 필요한 접근 패턴에 맞는 타입을 고르세요." />
           </p>
           <Bullets
             items={[
-              { heading: "Strings", body: "Binary-safe bytes. KV cache, counters (INCR), bit ops, JSON blobs." },
-              { heading: "Hashes", body: "Small object maps with field-level reads. Great for user profiles." },
-              { heading: "Lists / Sets / ZSets", body: "Queues, unique sets, ranked sets — each with O(1) or O(log N) operations." },
+              { heading: t({ en: "Strings", ko: "문자열" }), body: t({ en: "Binary-safe bytes. KV cache, counters (INCR), bit ops, JSON blobs.", ko: "바이너리 안전 바이트입니다. KV 캐시, 카운터(INCR), 비트 연산, JSON 저장에 활용합니다." }) },
+              { heading: t({ en: "Hashes", ko: "해시" }), body: t({ en: "Small object maps with field-level reads. Great for user profiles.", ko: "필드 단위로 읽을 수 있는 소형 객체 맵입니다. 사용자 프로필 저장에 적합합니다." }) },
+              { heading: t({ en: "Lists / Sets / ZSets", ko: "리스트 / 셋 / 정렬된 셋(ZSET)" }), body: t({ en: "Queues, unique sets, ranked sets — each with O(1) or O(log N) operations.", ko: "큐, 중복 없는 셋, 순위 셋을 제공합니다. 각각 O(1) 또는 O(log N) 연산을 지원합니다." }) },
             ]}
           />
         </>
       }
       viz={
-        <Stage label="Data-type playground" height={300}>
+        <Stage label={t({ en: "Data-type playground", ko: "데이터 타입 체험" })} height={300}>
           <div className="absolute inset-0 grid grid-cols-5 gap-3 p-5">
             {(Object.keys(palette) as Kind[]).map((k) => {
               const isActive = active === k;
@@ -84,8 +85,8 @@ export default function RedisDataTypes() {
       }
       sandbox={
         <SandboxControls>
-          <ActionButton label="play motif" primary onAction={() => void play(concept.motif)} />
-          <CounterDisplay label="picked" value={1} hint={active.toUpperCase()} />
+          <ActionButton label={t({ en: "play motif", ko: "모티프 재생" })} primary onAction={() => void play(concept.motif)} />
+          <CounterDisplay label={t({ en: "picked", ko: "선택됨" })} value={1} hint={active.toUpperCase()} />
         </SandboxControls>
       }
       code={<CodeBlock lang="bash" code={previews[active]} />}

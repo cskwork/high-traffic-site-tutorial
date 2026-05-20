@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from "react-router-dom";
 import { CurriculumRail } from "@/components/shell/CurriculumRail";
 import { Inspector } from "@/components/shell/Inspector";
 import { AudioToggle } from "@/components/shell/AudioToggle";
+import { LangToggle } from "@/components/shell/LangToggle";
 import { GlobalShortcuts } from "@/components/shell/GlobalShortcuts";
 import { conceptBySlug } from "@/content/registry";
 import { familyClass, familyLabel } from "@/lib/family";
@@ -10,12 +11,14 @@ import { useApp } from "@/lib/store";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { cx } from "@/lib/cx";
+import { T, useT } from "@/i18n/T";
 
 interface ShellProps {
   children: ReactNode;
 }
 
 export function Shell({ children }: ShellProps) {
+  const t = useT();
   const params = useParams();
   const location = useLocation();
   const slug = params.slug;
@@ -24,21 +27,26 @@ export function Shell({ children }: ShellProps) {
   const toggleNav = useApp((s) => s.toggleNav);
   const toggleInspector = useApp((s) => s.toggleInspector);
 
+  const conceptFamilyLabel = concept ? t(familyLabel[concept.family]) : undefined;
+  const conceptTitle = concept
+    ? t({ en: concept.title, ko: concept.title_ko ?? concept.title })
+    : undefined;
+
   return (
     <div className={cx("flex h-screen w-screen overflow-hidden", familyCls)}>
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-50 focus:rounded focus:bg-ink-50 focus:px-3 focus:py-1.5 focus:text-xs focus:font-medium focus:text-ink-900"
       >
-        Skip to content
+        <T en="Skip to content" ko="본문으로 건너뛰기" />
       </a>
       <GlobalShortcuts />
       <CurriculumRail />
       <div className="flex min-w-0 flex-1 flex-col">
         <Header
           slug={slug}
-          conceptTitle={concept?.title}
-          conceptFamily={concept ? familyLabel[concept.family] : undefined}
+          conceptTitle={conceptTitle}
+          conceptFamily={conceptFamilyLabel}
           atHome={location.pathname === "/"}
           onToggleNav={toggleNav}
           onToggleInspector={toggleInspector}
@@ -66,6 +74,8 @@ interface HeaderProps {
 }
 
 function Header({ slug, conceptTitle, conceptFamily, atHome, onToggleNav, onToggleInspector }: HeaderProps) {
+  const t = useT();
+
   return (
     <header className="flex h-14 shrink-0 items-center justify-between gap-3 border-b border-white/5 bg-ink-900/80 px-4 backdrop-blur">
       <div className="flex items-center gap-3">
@@ -73,7 +83,7 @@ function Header({ slug, conceptTitle, conceptFamily, atHome, onToggleNav, onTogg
           variant="ghost"
           size="sm"
           onClick={onToggleNav}
-          aria-label="Toggle curriculum"
+          aria-label={t({ en: "Toggle curriculum", ko: "커리큘럼 토글" })}
           className="lg:hidden"
         >
           <MenuIcon />
@@ -81,33 +91,37 @@ function Header({ slug, conceptTitle, conceptFamily, atHome, onToggleNav, onTogg
         <Link to="/" className="flex items-center gap-2.5">
           <Mark />
           <span className="font-display text-sm font-semibold tracking-tight text-ink-50">
-            High-Traffic Tutorial
+            <T en="High-Traffic Tutorial" ko="고트래픽 튜토리얼" />
           </span>
         </Link>
         <div className="hidden items-center gap-1 text-[0.7rem] text-ink-300 sm:flex">
           <span className="opacity-60">/</span>
           {atHome ? (
-            <span>Overview</span>
+            <span><T en="Overview" ko="개요" /></span>
           ) : conceptTitle ? (
             <>
               <Badge tone="concept">{conceptFamily}</Badge>
               <span className="truncate max-w-[36ch]">{conceptTitle}</span>
             </>
           ) : (
-            <span>Section</span>
+            <span><T en="Section" ko="섹션" /></span>
           )}
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <LangToggle />
         <AudioToggle />
         <Button
           variant="ghost"
           size="sm"
           onClick={onToggleInspector}
-          aria-label={slug ? "Toggle concept inspector" : "Toggle inspector panel"}
+          aria-label={slug
+            ? t({ en: "Toggle concept inspector", ko: "개념 인스펙터 토글" })
+            : t({ en: "Toggle inspector panel", ko: "인스펙터 패널 토글" })
+          }
           className="hidden xl:inline-flex"
         >
-          Inspector
+          <T en="Inspector" ko="인스펙터" />
         </Button>
       </div>
     </header>

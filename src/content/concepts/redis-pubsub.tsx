@@ -10,10 +10,12 @@ import {
 } from "@/components/concept/SandboxControls";
 import { conceptBySlug } from "@/content/registry";
 import { useAudio } from "@/audio/useAudio";
+import { T, useT } from "@/i18n/T";
 
 export default function RedisPubsub() {
   const concept = conceptBySlug["redis-pubsub"]!;
   const { play, ping } = useAudio();
+  const t = useT();
   const [running, setRunning] = useState(true);
   const [delivered, setDelivered] = useState(0);
 
@@ -23,21 +25,19 @@ export default function RedisPubsub() {
       story={
         <>
           <p>
-            PUBLISH and SUBSCRIBE are fire-and-forget. The server fans out to every connected
-            subscriber and forgets immediately. No persistence, no replay — perfect for live UI
-            updates, not for durable events.
+            <T en="PUBLISH and SUBSCRIBE are fire-and-forget. The server fans out to every connected subscriber and forgets immediately. No persistence, no replay — perfect for live UI updates, not for durable events." ko="PUBLISH와 SUBSCRIBE는 발행 후 망각(fire-and-forget) 방식입니다. 서버는 연결된 모든 구독자에게 메시지를 전달하고 즉시 잊어버립니다. 영속성도 재생도 없으므로 실시간 UI 업데이트에는 적합하지만, 내구성이 필요한 이벤트에는 사용하지 마세요." />
           </p>
           <Bullets
             items={[
-              { heading: "Disconnected = silent", body: "A subscriber that drops misses messages forever. Use Streams if you need ack/replay." },
-              { heading: "Pattern subscribe", body: "PSUBSCRIBE chat.* matches channels by glob. Useful for room-style routing." },
-              { heading: "Sharded pub/sub", body: "SPUBLISH/SSUBSCRIBE confine to one shard in Cluster, avoiding the all-nodes broadcast." },
+              { heading: t({ en: "Disconnected = silent", ko: "연결 끊김 = 메시지 소실" }), body: t({ en: "A subscriber that drops misses messages forever. Use Streams if you need ack/replay.", ko: "연결이 끊긴 구독자는 그 사이의 메시지를 영영 받지 못합니다. ack/재생이 필요하다면 스트림을 사용하세요." }) },
+              { heading: t({ en: "Pattern subscribe", ko: "패턴 구독" }), body: t({ en: "PSUBSCRIBE chat.* matches channels by glob. Useful for room-style routing.", ko: "PSUBSCRIBE chat.*처럼 글로브 패턴으로 채널을 구독합니다. 방(room) 기반 라우팅에 유용합니다." }) },
+              { heading: t({ en: "Sharded pub/sub", ko: "샤딩된 Pub/Sub" }), body: t({ en: "SPUBLISH/SSUBSCRIBE confine to one shard in Cluster, avoiding the all-nodes broadcast.", ko: "SPUBLISH/SSUBSCRIBE는 클러스터에서 특정 샤드에만 발행해 전체 노드 브로드캐스트를 방지합니다." }) },
             ]}
           />
         </>
       }
       viz={
-        <Stage label="One publisher · many subscribers · no persistence" height={320}>
+        <Stage label={t({ en: "One publisher · many subscribers · no persistence", ko: "발행자 하나 · 구독자 여럿 · 영속성 없음" })} height={320}>
           <MessageFlow
             running={running}
             beats={[0, 1, 2]}
@@ -66,9 +66,9 @@ export default function RedisPubsub() {
       }
       sandbox={
         <SandboxControls>
-          <Toggle label="publisher" value={running} onToggle={() => setRunning((v) => !v)} />
-          <ActionButton label="play motif" primary onAction={() => void play(concept.motif)} />
-          <CounterDisplay label="delivered" value={delivered} />
+          <Toggle label={t({ en: "publisher", ko: "발행자" })} value={running} onToggle={() => setRunning((v) => !v)} />
+          <ActionButton label={t({ en: "play motif", ko: "모티프 재생" })} primary onAction={() => void play(concept.motif)} />
+          <CounterDisplay label={t({ en: "delivered", ko: "전달됨" })} value={delivered} />
         </SandboxControls>
       }
       code={
