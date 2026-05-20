@@ -1,0 +1,95 @@
+import { useState } from "react";
+import { ConceptLayout, Bullets, CodeBlock } from "@/components/concept/ConceptLayout";
+import { Stage } from "@/viz/Stage";
+import { MessageFlow } from "@/viz/MessageFlow";
+import {
+  SandboxControls,
+  Toggle,
+  ActionButton,
+  CounterDisplay,
+} from "@/components/concept/SandboxControls";
+import { conceptBySlug } from "@/content/registry";
+import { useAudio } from "@/audio/useAudio";
+
+export default function RedisStreams() {
+  const concept = conceptBySlug["redis-streams"]!;
+  const { play, ping } = useAudio();
+  const [running, setRunning] = useState(true);
+  const [pending, setPending] = useState(0);
+
+  return (
+    <ConceptLayout
+      concept={concept}
+      story={
+        <>
+          <p>
+            Redis Streams give Kafka-style durability inside Redis. XADD appends; XREADGROUP reads
+            via consumer groups; XACK closes the loop. Unacked records sit in the Pending Entries
+            List until reclaimed by XCLAIM.
+          </p>
+          <Bullets
+            items={[
+              { heading: "XADD ... MAXLEN ~ N", body: "Cap the stream by length (approximate trims are cheap). Or trim by id range." },
+              { heading: "Consumer groups", body: "One group per logical reader; each entry is delivered to exactly one consumer per group." },
+              { heading: "Recovery", body: "If a consumer dies with unacked entries, another member can XCLAIM the idle ones and finish." },
+            ]}
+          />
+        </>
+      }
+      viz={
+        <Stage label="XADD → XREADGROUP → process → XACK" height={320}>
+          <MessageFlow
+            running={running}
+            beats={[0, 1, 2, 3]}
+            intervalMs={780}
+            onBeat={(_, edge) => {
+              const notes = ["E4", "G4", "B4", "G4"];
+              const note = notes[edge] ?? "C5";
+              void ping("pad", note);
+              if (edge === 1) setPending((p) => p + 1);
+              if (edge === 3) setPending((p) => Math.max(0, p - 1));
+            }}
+            nodes={[
+              { id: "p", label: "XADD", sub: "producer", kind: "producer", x: 0.07, y: 0.5 },
+              { id: "s", label: "stream:events", sub: "broker", kind: "broker", x: 0.4, y: 0.5 },
+              { id: "c", label: "consumer-7", sub: "group: workers", kind: "consumer", x: 0.7, y: 0.5 },
+              { id: "a", label: "XACK", sub: "commit", kind: "store", x: 0.94, y: 0.5 },
+            ]}
+            edges={[
+              { from: "p", to: "s", label: "append" },
+              { from: "s", to: "c", label: "read" },
+              { from: "c", to: "a", label: "ack" },
+              { from: "a", to: "s", label: "PEL clear" },
+            ]}
+          />
+        </Stage>
+      }
+      sandbox={
+        <SandboxControls>
+          <Toggle label="stream" value={running} onToggle={() => setRunning((v) => !v)} />
+          <ActionButton label="play motif" primary onAction={() => void play(concept.motif)} />
+          <CounterDisplay
+            label="pending entries"
+            value={pending}
+            hint={pending > 2 ? "XCLAIM idle" : "healthy"}
+          />
+        </SandboxControls>
+      }
+      code={
+        <CodeBlock
+          lang="bash"
+          code={`XADD events * type signup user 42
+
+XGROUP CREATE events workers $ MKSTREAM
+
+XREADGROUP GROUP workers c-1 COUNT 10 BLOCK 2000 STREAMS events >
+
+XACK events workers 1700000000000-0
+
+# Recover idle entries
+XAUTOCLAIM events workers c-2 30000 0`}
+        />
+      }
+    />
+  );
+}

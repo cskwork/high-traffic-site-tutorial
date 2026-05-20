@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --ring-kafka: 0 0 0 1px rgba(255, 180, 84, 0.35);
+  --ring-redis: 0 0 0 1px rgba(255, 106, 106, 0.35);
+  --ring-pattern: 0 0 0 1px rgba(91, 230, 238, 0.35);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background:
+    radial-gradient(1200px 700px at 20% -10%, rgba(240, 138, 30, 0.10), transparent 60%),
+    radial-gradient(1000px 600px at 110% 10%, rgba(226, 56, 56, 0.10), transparent 60%),
+    radial-gradient(900px 600px at 50% 120%, rgba(25, 181, 192, 0.10), transparent 60%),
+    #06070a;
+  background-attachment: fixed;
+  font-feature-settings: "ss01" on, "cv11" on;
+}
+
+::selection {
+  background: rgba(91, 230, 238, 0.25);
+  color: #eef0f4;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.surface {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0) 60%),
+    rgba(17, 20, 27, 0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono, ui-monospace);
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #cfd4df;
+}
+
+.shimmer {
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 6s linear infinite;
+}
+
+.concept-kafka {
+  --concept: #ffb454;
+  --concept-soft: rgba(255, 180, 84, 0.16);
+  --concept-deep: #c96b0a;
+}
+.concept-redis {
+  --concept: #ff6a6a;
+  --concept-soft: rgba(255, 106, 106, 0.16);
+  --concept-deep: #b8201f;
+}
+.concept-pattern {
+  --concept: #5be6ee;
+  --concept-soft: rgba(91, 230, 238, 0.16);
+  --concept-deep: #0d8a93;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid #5be6ee;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
